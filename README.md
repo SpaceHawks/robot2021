@@ -1,5 +1,5 @@
 # robot2020
-2019-2020 code for Scoops the robot.
+2020-2021 code for NASA's RMC Lunabotics competition
 
 ## Directory Structure
 - `/robot/`: code to run on robot
