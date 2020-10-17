@@ -19,7 +19,7 @@ class Wrapper:
 		return self.lidar.get_filtered_intens()[1].tolist()
 
 #for an object that represents a lidar used for location tracking
-class Locater(Wrapper):
+class Locator(Wrapper):
 	def __init__(self):
 		super().__init__()
 		self.x_coordinate = 0.0
@@ -153,6 +153,9 @@ class Locater(Wrapper):
 
 	def getOrientation(self):
 		return self.orientation
+	
+	def getCoords(self):
+		return (self.x_coordinate, self.y_coordinate, self.orientation)
 
 #for a lidar used for obstacle detection
 class Detector(Wrapper):
@@ -181,5 +184,5 @@ class Detector(Wrapper):
 		pass
 
 #test code
-variable = Locater()
+variable = Locator()
 variable.update()
