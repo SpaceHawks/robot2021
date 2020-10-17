@@ -20,9 +20,11 @@ let panels = [];
 function setup() {
 	// ws = {send: console.log};
 
-	const ip = prompt("What IP is robot on?", "192.168.1.127");
-	/*ws = new WebSocket(`ws://connect.websocket.in/v2/1?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImNlNDBjNzgyMzQzZmMwZWUzZDU4ODZkOTk3NmU4NzkxMzc2ZGYyZTQ3MTY1MDgyZGI3YTg1MDM4MDgwMzQ0MjI2ZTJlNjhlMTU2MGM5YjJiIn0.eyJhdWQiOiI4IiwianRpIjoiY2U0MGM3ODIzNDNmYzBlZTNkNTg4NmQ5OTc2ZTg3OTEzNzZkZjJlNDcxNjUwODJkYjdhODUwMzgwODAzNDQyMjZlMmU2OGUxNTYwYzliMmIiLCJpYXQiOjE1ODIwNzI2NzcsIm5iZiI6MTU4MjA3MjY3NywiZXhwIjoxNjEzNjk1MDc3LCJzdWIiOiI1MTEiLCJzY29wZXMiOltdfQ.Jem3J30CpKJVyXaM9kNSR0uGuweWNTjvo9i9_Y2TwFQqzaOU4e-_dFBLIvsSDBizESgM3n_lwWKg7gRYytluQ1prD3KzIivmKt3hfasR8cfiv53lIZ7XPNtov9W4pOhJDAXydZ60F53rPf6YrWZ_QnvRvEEJK69SNo7mqsgruLqYg8KgDKmsM0YLm7TY2w0DR9DMLcrQywSvztmLXhmSxwMsxZkJ_uQmQUnvOIe5pTqFT7fdxW67E3RWCTWWP5HaRm0gnJ9B4a5aozmrpQBJ2U1Zgzk8BUagPhU9Ay5rVKQLIM6ya_MbPDSbYU-3kNdoq5vfjqam87KfcVXuLIN1BGvvpYE1bzoABNI5L5zOBNtpidqyYLvOeQl-rR-JhwWxQ2K__5VAh9-5A4i5PG5dxufvyFKFnN7FtZyXeLvEwNfoTxSC_ceHswW2nLpI-nx3lvfpFm0ICKNJKT2bc5NvrY3hLDlxK-wtja3USUHudx7rNimOiW-SMvs11JRSBa_9qXdJ1CiiFafNaqMcH6EZEjRIX3w8zICIIB_4KrRSzGwSNfQ8PSuADijbCBO8sAMjcuNo6iRmaXNdLiPJPvAEAn8vBoq0LTWwPX4eVCzPdV0wk2QNnq5qBWaHfbb6YYGrdc2FVtsH-2K-NC6EFcQqw9YCEyU2jxJlDdOsuIMd-BE`);*/
-	ws = new WebSocket(`ws://${ip}:8080`);
+	// const ip = prompt("What IP is robot on?", "192.168.1.127");
+	// const port = prompt("What port number is the robot using?", "8080")
+	ws = new WebSocket(`wss://connect.websocket.in/v3/1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self`);
+	// console.log(`Connecting to ws://${ip}:${port}`)
+	// ws = new WebSocket(`ws://${ip}:${port}`);
 	ws.onmessage = gotMessage;
 
 	ws.onclose = msg => {
@@ -35,7 +37,7 @@ function setup() {
 	};
 
 	// xbox server WebSocket
-	xws = new WebSocket("127.0.0.1:8001");
+	xws = new WebSocket("ws://localhost:8001");
 	xws.onmessage = xboxServerRecv;
 	xws.onclose = msg => {
 		alert("lost connection with the xbox sever... referesh to reconnect");
@@ -84,6 +86,7 @@ function setup() {
 
 let cmdQueue = [];
 function xboxServerRecv(msg) {
+	console.log(`Got message: ${msg.data}`);
 	const cmd = msg.data.split(':');
 	if (cmd.length < 2)
 		return;

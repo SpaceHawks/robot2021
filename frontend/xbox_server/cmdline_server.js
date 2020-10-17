@@ -24,35 +24,10 @@ async function askForCommand() {
     askForCommand();
 }
 
-
-// controller.on('leftX', data => {
-// 	values.leftX = Math.round(100 * data / 32768);
-// 	datalog.emit('data', `leftX:${values.leftX}`);
-// });
-// controller.on('leftY', data => {
-// 	values.leftY = Math.round(100 * data / 32768);
-// 	datalog.emit('data', `leftY:${values.leftY}`);
-// });
-// controller.on('rightX', data => {
-// 	values.rightX = Math.round(100 * data / 32768)
-// 	datalog.emit('data', `rightX:${values.rightX}`);
-// });
-// controller.on('rightY', data => {
-// 	values.rightY = Math.round(100 * data / 32768)
-// 	datalog.emit('data', `rightY:${values.rightY}`);
-// });
-
-// controller.on('a', data => datalog.emit('data', `a:${data}`));
-// controller.on('b', data => datalog.emit('data', `b:${data}`));
-// controller.on('x', data => datalog.emit('data', `x:${data}`));
-// controller.on('y', data => datalog.emit('data', `y:${data}`));
-
 const ws_server = ws.createServer(conn => {
 	console.log("new ws connection");
 	datalog.on('data', data => conn.sendText(data));
 }).listen(8001);
-
-
 
 const express = require('express');
 const app = express();
