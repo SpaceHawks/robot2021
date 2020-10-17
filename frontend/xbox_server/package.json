@@ -15,6 +15,7 @@
   "dependencies": {
     "events": "^3.1.0",
     "express": "^4.17.1",
+    "inquirer": "^7.3.3",
     "nodejs-websocket": "^1.7.2"
   }
 }
