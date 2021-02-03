@@ -3,6 +3,7 @@
 const ws = require("nodejs-websocket");
 const EventEmitter = require("events");
 const ioHook = require("iohook");
+const chalk = require("chalk");
 
 // make `process.stdin` begin emitting "keypress" events
 
@@ -16,6 +17,7 @@ const datalog = new EventEmitter();
 ioHook.on("keypress", (event) => {
     if (event?.rawcode) {
         const input = String.fromCharCode(event.rawcode).toLowerCase();
+        console.log(`Input: ${chalk.yellow(input)}`);
         if (["a", "b", "x", "y"].includes(input)) datalog.emit("data", input);
         else if (input === "l") {
             values.leftX = Math.random() * 2 - 1; // -1, 1
