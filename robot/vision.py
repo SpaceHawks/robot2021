@@ -118,10 +118,7 @@ class Locator(LIDAR):
 		IQR = (upper_quartile - lower_quartile) * self.OUTLIER_CONSTANT
 		quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
 
-		without_outliers = []
-		for num in a:
-			if num >= quartileSet[0] and num <= quartileSet[1]:
-				without_outliers.append(num)
+		without_outliers = [num for num in a if quartileSet[0] <= num <= quartileSet[1]]
 
 		return without_outliers
 
