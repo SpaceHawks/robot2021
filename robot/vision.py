@@ -19,7 +19,9 @@ class Locator(LIDAR):
 	NUM_POINTS = 6 # Number of edges on the target
 	LAST_STRIPE_BRIGHT = True # Whether or not the last stripe is white
 
-	location = { "x": 0.0, "y": 0.0, "a": 0.0 } # The location that will be updated by locate()
+	x = 0.0
+	y = 0.0
+	angle = 0.0
 
 	def locate(self):
 		# Get LiDAR readings
@@ -48,17 +50,47 @@ class Locator(LIDAR):
 		if points_left > 0:
 			raise RuntimeError("Target not found")
 
+		y = self._calculateY(edges)
+		x = self._calculateX(y, edges)
+		angle = self._calculateAngle(x, y, edges)
 
-	def _calculateX(self, points: list[tuple[float, float, float]]):
-		pass
+		self.x = x
+		self.y = y
+		self.angle = angle
 
 
-	def _calculateY(self, points: list[tuple[float, float, float]]):
+	def _calculateX(self, y: float, edges: list[tuple[float, float, float]]):
+		xs = []
+		a1, d1 = edges[-1] # The origin (last edge) will always be p1
+
+		for i in range(1, len(edges)):
+			a2, d2 = edges[i]
+
+			alpha = a1 - a2
+			w = math.sqrt(d1 ** 2 + d2 ** 2 - 2 * d1 * d2 * math.cos(alpha))
+
+			dsin = d2 * math.sin(alpha)
+
+			abs_x = abs(y * math.sqrt(w ** 2 - dsin ** 2) / dsin)
+
+			# Need to figure out sign of x
+			d_neg = math.sqrt(y ** 2 + (abs_x + w) ** 2)
+			d_pos = math.sqrt(y ** 2 + (abs_x - w) ** 2)
+
+			x = abs_x if abs(d_pos - d2) < abs(d_neg - d2) else -abs_x
+			xs.append(x)
+		
+		xs_clean = self._removeOutliers(xs)
+		return np.average(xs_clean)
+
+
+
+	def _calculateY(self, edges: list[tuple[float, float, float]]):
 		ys = []
-		for i in range(len(points) - 1):
+		for i in range(len(edges) - 1):
 			# Iterate over every sequential pair of edges
-			a1, d1 = points[i]
-			a2, d2 = points[i + 1]
+			a1, d1 = edges[i]
+			a2, d2 = edges[i + 1]
 
 			alpha = a1 - a2 # The sign doesn't matter for this calculation
 			d1d2 = d1 * d2 # Used more than once might as well be efficient
@@ -72,8 +104,8 @@ class Locator(LIDAR):
 		return np.average(ys_clean)
 
 
-	def _calculateAngle(self, points: list[tuple[float, float, float]]):
-		pass
+	def _calculateAngle(self, x: float, y: float, points: list[tuple[float, float, float]]):
+		return 2.0
 
 	# Remove outliers from list of values
 	def _removeOutliers(self, x):
