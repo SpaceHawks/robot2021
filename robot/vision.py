@@ -3,6 +3,7 @@ from hokuyolx import HokuyoLX
 import numpy as np
 import math
 import sys
+from time import time
 from termcolor import colored, cprint
 
 
@@ -22,6 +23,7 @@ class Locator(LIDAR):
 	x = 0.0
 	y = 0.0
 	angle = 0.0
+	last_updated = 0.0
 
 	def locate(self):
 		# Get LiDAR readings
@@ -57,6 +59,7 @@ class Locator(LIDAR):
 		self.x = x
 		self.y = y
 		self.angle = angle
+		self.last_updated = time()
 
 
 	def _calculateX(self, y: float, edges: list[tuple[float, float, float]]):
