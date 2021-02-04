@@ -89,8 +89,8 @@ class Locator(LIDAR):
 		ys = []
 		for i in range(len(edges) - 1):
 			# Iterate over every sequential pair of edges
-			a1, d1 = edges[i]
-			a2, d2 = edges[i + 1]
+			a1, d1, _ = edges[i]
+			a2, d2, _ = edges[i + 1]
 
 			alpha = a1 - a2 # The sign doesn't matter for this calculation
 			d1d2 = d1 * d2 # Used more than once might as well be efficient
@@ -105,7 +105,9 @@ class Locator(LIDAR):
 
 
 	def _calculateAngle(self, x: float, y: float, points: list[tuple[float, float, float]]):
-		return 2.0
+		alpha_origin, *_ = points[-1]
+		arctanxy = math.atan2(x, y)
+		return alpha_origin - arctanxy
 
 	# Remove outliers from list of values
 	def _removeOutliers(self, x):
