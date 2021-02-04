@@ -1,22 +1,18 @@
-from hokuyolx import HokuyoLX
-import numpy as np
-import math
+import keyboard
+from time import sleep
+from vision import Locator
 
-#superclass for Locater and Detector
-class Wrapper:
+locator = Locator()
 
-	def __init__(self):
-		self.lidar = HokuyoLX()
+def wait_keyboard():
+    print("Press t to test LiDAR...")
+    keyboard.wait("t")
+    print("Grabbing location...")
+    
+    locator.locate()
+    locator.print_location()
 
-	def get_dists(self):
-		return self.lidar.get_filtered_dist()[1].tolist()
+    sleep(0.1)
+    wait_keyboard()
 
-	def get_intens(self):
-		return self.lidar.get_filtered_intens()[1].tolist()
-
-lidar = Wrapper()
-
-intens = lidar.get_intens()
-
-angles = [round(intens[a][0] * 180 / math.pi, 2) for a in range(len(intens))]
-print(angles)
+wait_keyboard()

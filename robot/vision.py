@@ -125,86 +125,10 @@ class Locator(LIDAR):
 
 		return without_outliers
 
+	def print_location(self):
+		x_r = round(self.x, 2)
+		y_r = round(self.y, 2)
+		a_r = round(self.angle, 2)
 
+		cprint(f"x: {x_r}, y: {y_r}, a: {a_r}", "cyan")
 
-
-#for an object that represents a lidar used for location tracking
-# class Locator(Wrapper):
-# 	def single_run(self):
-# 		# Use all possible triangles to triangulate position
-
-# 		os = []
-# 		ys = []
-# 		for k in range(len(targets) - 1):
-# 			t1 = targets[k]
-# 			t2 = targets[k+1]
-# 			(_o, _y) = self.target_xy(t1, t2)
-# 			os.append(_o)
-# 			ys.append(_y)
-
-# 		return (os, ys)
-
-	
-
-# 	def target_xy(self, t1, t2):
-# 		[angle1, d1, _] = t1
-# 		[angle2, d2, _] = t2
-
-# 		theta = abs(angle1 - angle2)
-
-# 		stripe_width = math.sqrt((d1**2)+(d2**2)-(2*d1*d2*math.cos(theta)))
-
-# 		# alpha = math.asin(d1 * math.sin(theta) / stripe_width)
-
-# 		y = d1 * d2 * math.sin(theta) / stripe_width
-
-# 		side_of_target = 1 if d1 < d2 else -1 # 1 if right of target
-
-# 		sign = 1 if angle1 >= 0 else -1 # 1 if robot pointing right, 0 if pointing left
-
-# 		orientation = sign * abs(side_of_target * angle1 - math.acos(y/d1))
-
-# 		def toDeg(x):
-# 			return colored(str(round(x * 180 / math.pi, 2)) + ' deg', 'green')
-
-# 		def toCM(x):
-# 			return colored(str(round(x / 10, 2)) + ' cm', 'green')
-
-# 		print(f"d1: {toCM(d1)}, a1: {toDeg(angle1)}")
-# 		print(f"d2: {toCM(d2)}, a2: {toDeg(angle2)}")
-# 		print(f"o1: {toDeg(orientation)}")
-# 		print(f"y: {toCM(y)}\n")
-
-# 		# print(f"orientation1: {orientation * 180 / math.pi}, orientation2: {orientation2 * 180 / math.pi}")
-# 		# print(orientation * 180 / math.pi, "deg")``
-# 		return (orientation, y)
-
-# 	def update(self):
-# 		ITERATIONS = 10
-
-# 		os = []
-# 		ys = []
-
-# 		for _ in range(ITERATIONS):
-# 			(_os, _ys) = self.single_run()
-# 			os += _os
-# 			ys += _ys
-
-# 		y_avg = self.removeOutliers(ys)
-# 		o_avg = self.removeOutliers(os)
-
-# 		print(f"o: {round(o_avg * 180 / math.pi, 2)} degrees")
-# 		print(f"y: {round(0.1 * y_avg, 2)} cm")
-
-
-# 	def getX(self):
-# 		return self.x_coordinate
-
-# 	def getY(self):
-# 		return self.y_coordinate
-
-# 	def getOrientation(self):
-# 		return self.orientation
-	
-# 	def getCoords(self):
-# 		return (self.x_coordinate, self.y_coordinate, self.orientation)
