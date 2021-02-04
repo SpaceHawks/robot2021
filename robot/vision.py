@@ -115,10 +115,11 @@ class Locator(LIDAR):
 		a = np.array(x)
 		upper_quartile = np.percentile(a, 75)
 		lower_quartile = np.percentile(a, 25)
+		
 		IQR = (upper_quartile - lower_quartile) * self.OUTLIER_CONSTANT
-		quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
+		lower_bound, upper_bound = (lower_quartile - IQR, upper_quartile + IQR)
 
-		without_outliers = [num for num in a if quartileSet[0] <= num <= quartileSet[1]]
+		without_outliers = [num for num in a if lower_bound <= num <= upper_bound]
 
 		return without_outliers
 
