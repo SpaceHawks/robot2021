@@ -1,23 +1,3 @@
-vision_test.py
-Not shared
-Type
-Text
-Size
-1 KB (1,030 bytes)
-Storage used
-1 KB (1,030 bytes)
-Location
-Lab 3
-Owner
-me
-Modified
-Feb 11, 2021 by me
-Opened
-5:39 PM by me
-Created
-Feb 11, 2021 with Google Drive Web
-Add a description
-Viewers can download
 import keyboard
 from time import sleep
 from vision import Locator
