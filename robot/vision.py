@@ -1,23 +1,3 @@
-vision.py
-Not shared
-Type
-Text
-Size
-4 KB (4,336 bytes)
-Storage used
-4 KB (4,336 bytes)
-Location
-Lab 3
-Owner
-me
-Modified
-Feb 11, 2021 by me
-Opened
-5:38 PM by me
-Created
-Feb 11, 2021 with Google Drive Web
-Add a description
-Viewers can download
 #vision.py
 from hokuyolx import HokuyoLX
 import numpy as np
