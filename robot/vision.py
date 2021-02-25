@@ -142,7 +142,7 @@ class Locator(LIDAR):
 
 # Obstacle Detection
 class Detector(LIDAR):
-	MIN_DIST = 100 # How close should an obstacle be before we "care" about it?
+	MAX_DIST = 100 # How close should an obstacle be before we "care" about it?
 
 	obstacles = []
 
@@ -155,7 +155,7 @@ class Detector(LIDAR):
 			alpha, dist, _ = point
 
 			# We don't care about far away obstacles bc inaccuracy
-			if dist > self.MIN_DIST:
+			if dist > self.MAX_DIST:
 				continue
 
 			angle = alpha - theta
