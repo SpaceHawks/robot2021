@@ -163,6 +163,7 @@ class Detector(LIDAR):
 			x = dist * math.sin(angle)
 			y = dist * math.cos(angle)
 
+			# TODO: Determine signs of x and y
 			# TODO: Add to robot.x and robot.y
 
 			self.obstacles.append(Point(x, y))
