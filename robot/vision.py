@@ -14,6 +14,12 @@ class LIDAR:
     def scan(self) -> list[tuple[float, float, float]]:
         return self.lidar.get_filtered_intens()[1].tolist()
 
+class Point():
+	def __init__(self, x, y):
+		self.x = x
+		self.y = y
+
+#Localization
 class Locator(LIDAR):
     OUTLIER_CONSTANT = 1.5 # Threshold for considering a data point an outlier
     REFLECTIVITY_THRESHOLD = 3000 # Threshold for detecting light part of the target
@@ -133,3 +139,36 @@ class Locator(LIDAR):
         a_r = round(np.degrees(self.angle), 2)
 
         cprint(f"x: {x_r}, y: {y_r}, a: {a_r}°", "cyan")
+
+# Obstacle Detection
+class Detector(LIDAR):
+	MIN_DIST = 100 # How close should an obstacle be before we "care" about it?
+
+	obstacles = []
+
+	def detect(self, theta):
+		# Get LiDAR readings
+		data_points = self.scan()
+
+        # Iterate through the readings
+		for point in data_points:
+			alpha, dist, _ = point
+
+			# We don't care about far away obstacles bc inaccuracy
+			if dist > self.MIN_DIST:
+				continue
+
+			angle = alpha - theta
+
+			x = dist * math.sin(angle)
+			y = dist * math.cos(angle)
+
+			# TODO: Add to robot.x and robot.y
+
+			self.obstacles.append(Point(x, y))
+
+	def print_obstacles(self):
+		cprint(f"Total obstacles: {len(self.obstacles)}", "red")
+		for o in self.obstacles:
+			cprint(f"({o.x}, {o.y})", "yellow")
+			
