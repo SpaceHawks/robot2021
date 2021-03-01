@@ -11,12 +11,10 @@ def wait_keyboard():
         print(i)
         try:
             detector.detect(theta=0) # For now, just place the robot at 0 deg so we don't have to test with 2 lidars
-            
         except RuntimeError as e:
             print(e)
-        
         sleep(0.5)
-    
+        
     detector.print_obstacles()
     
 wait_keyboard()
