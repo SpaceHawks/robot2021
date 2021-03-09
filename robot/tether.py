@@ -5,8 +5,6 @@ import threading
 import pickle
 
 
-
-
 sendData = None
 
 # start server, begin accepting connections

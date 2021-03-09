@@ -1,7 +1,9 @@
-import motors
+# import motors
 import tether
-import linear_actuator
+from time import sleep
+# import linear_actuator
 import sys
+from vision import Detector
 
 def receive_msg(msg, conn):
     # format is operator:arguments
@@ -73,3 +75,13 @@ def receive_msg(msg, conn):
 # begin accepting connections
 t = tether.accept_connections(receive_msg)
 t.join()
+
+# Create obstacle detector
+detector = Detector()
+
+while True:
+    sleep(1)
+    new_obs = detector.detect(theta=0)
+    obs_strs = [f"{o.x},{o.y}" for o in new_obs]
+    cmd = "O:" + ",".join(obs_strs)
+    print(cmd + "\n\n")

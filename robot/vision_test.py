@@ -1,6 +1,7 @@
 import keyboard
 from time import sleep
 from vision import Locator
+import numpy as np
 # import matplotlib.pyplot as plt
 
 
@@ -21,27 +22,25 @@ def wait_keyboard():
     wait_keyboard()
 
 def run_tests(num):
+    NUM_TESTS = 1
     results_x = []
     results_y = []
     results_a = []
-    for i in range(num):
+    for i in range(NUM_TESTS):
+        print(f"{i+1}/{NUM_TESTS}")
         try:
             locator.locate()
-            locator.print_location()
+            # locator.print_location()
             results_x.append(locator.x)
             results_y.append(locator.y)
             results_a.append(locator.angle)
         except RuntimeError as e:
             print(e)
-        sleep(0.1)
     
     # t = [(i+1) for i in range(num)]
-    print(results_x)
-    print(results_y)
-    print(results_a)
+    print(f"x_std: {np.std(results_x)} ({results_x[-1]})")
+    print(f"y_std: {np.std(results_y)} ({results_y[-1]})")
+    print(f"a_std: {np.std(results_a)}")
     # plt.plot(t, results_x, 'r--', t, results_y, 'bs')
     #plt.ylabel("Distance (mm)")
     # plt.show()
-    
-run_tests(1000)
-# wait_keyboard()

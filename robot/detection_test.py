@@ -4,17 +4,15 @@ from vision import Detector
 
 detector = Detector()
 
-def wait_keyboard():
-    print("Running obstacle LiDAR...")
-    
+def run_detect_test():
     for i in range(10):
-        print(i)
         try:
-            detector.detect(theta=0) # For now, just place the robot at 0 deg so we don't have to test with 2 lidars
+            d = len(detector.detect(theta=0)) # For now, just place the robot at 0 deg so we don't have to test with 2 lidars
+            print(d)
         except RuntimeError as e:
             print(e)
-        sleep(0.5)
+        # sleep(0.5)
         
     detector.print_obstacles()
     
-wait_keyboard()
+run_detect_test()

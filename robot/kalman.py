@@ -95,12 +95,27 @@ class KalmanFilter:
 
     def runAdaptiveFilter(self, Y, S):
         E = Y.T * S.I * Y
+        print(E)
         if E > self.std:
             self.Q *= self.Q_scale
             self.count += 1
         elif self.count > 0:
             self.Q /= self.Q_scale
             self.count -= 1
+
+    def getXYA(self):
+        vals = self.X0.tolist()
+        x = vals[0][0]
+        y = vals[1][0]
+        theta = vals[2][0]
+        return [x, y, theta]
+    
+    def getXYAPrime(self):
+        vals = self.X0.tolist()
+        x = vals[3][0]
+        y = vals[4][0]
+        theta = vals[5][0]
+        return [x, y, theta]
 
     def printValues(self):
         vals = self.X0.tolist()

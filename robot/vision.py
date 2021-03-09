@@ -5,19 +5,30 @@ import math
 import sys
 from time import time
 from termcolor import colored, cprint
+from kalman import KalmanFilter
 
 
 class LIDAR:
     def __init__(self):
         self.lidar = HokuyoLX()
+        self.kalman = KalmanFilter(adaptive=False, dt=0.025)
     
     def scan(self) -> list[tuple[float, float, float]]:
         return self.lidar.get_filtered_intens()[1].tolist()
 
 class Point():
-	def __init__(self, x, y):
-		self.x = x
-		self.y = y
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __hash__(self):
+        return hash(self.__repr__())
+    
+    def __repr__(self):
+        return f"{self.x},{self.y}"
+    
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
 #Localization
 class Locator(LIDAR):
@@ -35,6 +46,7 @@ class Locator(LIDAR):
         # Get LiDAR readings
         data_points = self.scan()
 
+
         # Setup some variables
         points_left = self.NUM_POINTS
         look_bright = self.LAST_STRIPE_BRIGHT # Are we looking for dark -> light transition (True) or light -> dark transition (False)?
@@ -43,7 +55,8 @@ class Locator(LIDAR):
 
         # Iterate through the readings
         for point in data_points:
-            _, _, intensity = point
+            d_ang, d_dist, intensity = point
+            print((np.degrees(d_ang), d_dist, intensity))
             is_bright = intensity >= self.REFLECTIVITY_THRESHOLD
 
             if points_left <= 0:
@@ -61,21 +74,26 @@ class Locator(LIDAR):
         y = self._calculateY(edges)
         x = self._calculateX(y, edges)
         angle = self._calculateAngle(x, y, edges)
-
+        
+        self.kalman.addMeasurement([[x], [y], [angle]], [[0], [0]])
+                
+        [x, y, angle] = self.kalman.getXYA()
+        # print(self.kalman.getXYAPrime())
         self.x = x
         self.y = y
         self.angle = angle
+        # print(angle)
         self.last_updated = time()
 
 
     def _calculateX(self, y: float, edges: list[tuple[float, float, float]]):
         xs = []
-        a1, d1, _ = edges[-1] # The origin (last edge) will always be p1
+        a1, d1, _ = edges[0] # The origin (last edge) will always be p1
 
         for i in range(1, len(edges)):
             a2, d2, _ = edges[i]
 
-            alpha = a1 - a2
+            alpha = a2 - a1
             w = math.sqrt(d1 ** 2 + d2 ** 2 - 2 * d1 * d2 * math.cos(alpha))
 
             dsin = d2 * math.sin(alpha)
@@ -88,7 +106,7 @@ class Locator(LIDAR):
 
             x = abs_x if abs(d_pos - d2) < abs(d_neg - d2) else -abs_x
             xs.append(x)
-        
+        # print([x * 0.03937008 for x in xs])
         xs_clean = self._removeOutliers(xs)
         return np.average(xs_clean)
 
@@ -134,41 +152,53 @@ class Locator(LIDAR):
         return without_outliers
 
     def print_location(self):
-        x_r = round(self.x, 2)
-        y_r = round(self.y, 2)
+        x_r = round(self.x * 0.03937008, 2)
+        y_r = round(self.y * 0.03937008, 2)
         a_r = round(np.degrees(self.angle), 2)
 
         cprint(f"x: {x_r}, y: {y_r}, a: {a_r}°", "cyan")
 
 # Obstacle Detection
 class Detector(LIDAR):
-	MAX_DIST = 100 # How close should an obstacle be before we "care" about it?
+    MAX_DIST = 3000 # How close should an obstacle be before we "care" about it?
+    ROUND_TO = 50 # Number of mm to round to
 
-	obstacles = []
+    obstacles = set()
 
-	def detect(self, theta):
-		# Get LiDAR readings
-		data_points = self.scan()
+    def detect(self, theta):
+        # Set of new obstacles
+        discovered = set()
+        # Get LiDAR readings
+        data_points = self.scan()
 
         # Iterate through the readings
-		for point in data_points:
-			alpha, dist, _ = point
+        for point in data_points:
+            alpha, dist, _ = point
 
-			# We don't care about far away obstacles bc inaccuracy
-			if dist > self.MAX_DIST:
-				continue
+            # We don't care about far away obstacles bc inaccuracy
+            if dist > self.MAX_DIST:
+                continue
 
-			angle = alpha - theta
+            angle = alpha - theta
 
-			x = dist * math.sin(angle)
-			y = dist * math.cos(angle)
+            x = dist * math.sin(angle)
+            y = dist * math.cos(angle)
 
-			# TODO: Add to robot.x and robot.y
+            # TODO: Add to robot.x and robot.y
 
-			self.obstacles.append(Point(x, y))
+            # Round x and y to nearest ROUND_TO
+            x = math.floor(x / self.ROUND_TO) * self.ROUND_TO
+            y = math.floor(y / self.ROUND_TO) * self.ROUND_TO
 
-	def print_obstacles(self):
-		cprint(f"Total obstacles: {len(self.obstacles)}", "red")
-		for o in self.obstacles:
-			cprint(f"({o.x}, {o.y})", "yellow")
-			
+            obs_pt = Point(x,y)
+            if obs_pt not in self.obstacles:
+                discovered.add(obs_pt)
+                self.obstacles.add(obs_pt)
+            
+        return discovered
+
+    def print_obstacles(self):
+        cprint(f"There are {len(self.obstacles)} obstacles", "red")
+        # for o in self.obstacles:
+        #     print(f"[{o.x}, {o.y}],")
+            
