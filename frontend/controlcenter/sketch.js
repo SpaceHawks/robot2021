@@ -77,6 +77,7 @@ function setup() {
 
 	panels = [ generalSettings, driveSettings, consoleSettings ];
 	createCanvas(2500, 2500);
+	frameRate(1);
 	angleMode(DEGREES);
 	rectMode(CENTER);
 	console.log(CENTER, "CENTER");
@@ -240,7 +241,7 @@ function draw() {
 	rectMode(CORNER);	
 	for (const o of obstacles) {
 		// const o = obstacles[i];
-		rect(nX(o.x), nY(o.y), gridSize, gridSize);
+		rect(nX(o.x), nY(o.y / 2), gridSize, gridSize);
 	}
 	
 	pop();
