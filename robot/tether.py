@@ -1,25 +1,36 @@
 # Communication related functions
-import asyncio
 import websockets
-import threading
-import pickle
+import socket
+
 
 class Tether:
-    def __init__(self, handler, host="0.0.0.0", port=8080):
+    def __init__(self, handler, loop, host="0.0.0.0", port=8080):
         self.handler = handler
+        self.host = host
+        self.port = port
 
         start_server = websockets.serve(self.respond, host, port)
-        asyncio.get_event_loop().run_until_complete(start_server)
-        asyncio.get_event_loop().run_forever()
+        loop.run_until_complete(start_server)
+
     
-    def respond(self, res, path):
-        while True:
-            msg = await res.recv()
+    async def respond(self, res, path):
+        self.res = res
+        async for msg in res:
             await self.realrespond(msg, path, res)
     
-    def realrespond(self, msg, path, res):
-        print(msg, path, res)
+    async def realrespond(self, msg, path, res):
+        # print(f"Got command: {msg}")
+        self.handler(msg, self)
 
-    def send(self, msg):
-        pass #! TODO
+    async def send(self, msg):
+        try:
+            await self.res.send(msg)
+            return True
+        except AttributeError:
+            print("Cannot send message as no client is connected")
+            return False
     
+    def get_ip_address(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return f"{s.getsockname()[0]}:{self.port}"

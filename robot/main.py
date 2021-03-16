@@ -1,13 +1,15 @@
 # import motors
 from tether import Tether
 from time import sleep
+import asyncio
+import random
 # import linear_actuator
 import sys
-from vision import Detector
+# from vision import Detector
 
 def receive_msg(msg, conn):
     # format is operator:arguments
-    cmd, args = msg.split(':')
+    cmd, *args = msg.split(':')
 
     print(f"cmd: {cmd}, args: {args}")
 
@@ -75,8 +77,22 @@ def receive_msg(msg, conn):
     #     print('invalid command: ', msg)
 
 # begin accepting connections
-t = Tether(receive_msg)
+loop = asyncio.get_event_loop()
+t = Tether(handler=receive_msg, loop=loop)
 
+async def obstacleTest():
+    while True:
+        x = random.randint(5, 70)
+        y = random.randint(5, 50)
+        await t.send(f"O:{x},{y}")
+        await asyncio.sleep(5)
+
+loop.create_task(obstacleTest())
+
+# Start the event loop
+print(f"IP Address: {t.get_ip_address()}")
+print("Starting event loop")
+loop.run_forever()
 
 # Create obstacle detector
 # detector = Detector()
