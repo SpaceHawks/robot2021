@@ -161,7 +161,7 @@ class Locator(LIDAR):
 # Obstacle Detection
 class Detector(LIDAR):
     MAX_DIST = 3000 # How close should an obstacle be before we "care" about it?
-    ROUND_TO = 50 # Number of mm to round to
+    ROUND_TO = 5 # Number of mm to round to
 
     obstacles = set()
 
@@ -191,8 +191,9 @@ class Detector(LIDAR):
             y = math.floor(y / self.ROUND_TO) * self.ROUND_TO
 
             obs_pt = Point(x,y)
+            discovered.add(obs_pt)
             if obs_pt not in self.obstacles:
-                discovered.add(obs_pt)
+                # discovered.add(obs_pt)
                 self.obstacles.add(obs_pt)
             
         return discovered

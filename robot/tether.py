@@ -26,7 +26,7 @@ class Tether:
         try:
             await self.res.send(msg)
             return True
-        except AttributeError:
+        except Exception as e:
             print("Cannot send message as no client is connected")
             return False
     
