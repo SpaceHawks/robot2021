@@ -12,7 +12,7 @@ let msgs = [];
 
 // Last received robot and obstacle locations
 let obstacles = []; // [{x, y}, {x, y}, ...]
-let robot = {x: ~~(200 / gridSize), y: ~~(200 / gridSize), a: 0}; // a is angle
+let robot = {x: ~~(200 / gridSize), y: ~~(0 / gridSize), a: 0}; // a is angle
 
 // UI components
 let panels = [];
@@ -22,7 +22,6 @@ function setup() {
 
 	const ip = prompt("What IP is robot on?", "192.168.1.127");
 	const port = prompt("What port number is the robot using?", "8080")
-	// ws = new WebSocket(`wss://connect.websocket.in/v3/1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self`);
 	console.log(`Connecting to ws://${ip}:${port}`)
 	ws = new WebSocket(`ws://${ip}:${port}`);
 	ws.onmessage = gotMessage;
@@ -37,11 +36,11 @@ function setup() {
 	};
 
 	// xbox server WebSocket
-	xws = new WebSocket("ws://localhost:8001");
-	xws.onmessage = xboxServerRecv;
-	xws.onclose = msg => {
-		alert("lost connection with the xbox sever... referesh to reconnect");
-	};
+	// xws = new WebSocket("ws://localhost:8001");
+	// xws.onmessage = xboxServerRecv;
+	// xws.onclose = msg => {
+	// 	alert("lost connection with the xbox sever... referesh to reconnect");
+	// };
 
 	driveSettings = QuickSettings.create(document.body.clientWidth - 300, 0.4 * document.body.clientHeight, "Drive settings")
 		.addButton("Tank Drive", () => handlePress("TD"))
@@ -254,6 +253,7 @@ function gotMessage(msg) {
 		let [x, y, a] = data;
 		robot = {x, y, a, time: Date.now()};
 	} else if (command === "O") {
+		outputConsole(`Obstacles: ${data}`);
 		for (let i = 0; i < data.length; i+=2) {
 			try {
 				let [x, y] = data.slice(i, i + 2);
