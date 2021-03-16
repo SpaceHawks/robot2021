@@ -20,11 +20,11 @@ let panels = [];
 function setup() {
 	// ws = {send: console.log};
 
-	// const ip = prompt("What IP is robot on?", "192.168.1.127");
-	// const port = prompt("What port number is the robot using?", "8080")
-	ws = new WebSocket(`wss://connect.websocket.in/v3/1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self`);
-	// console.log(`Connecting to ws://${ip}:${port}`)
-	// ws = new WebSocket(`ws://${ip}:${port}`);
+	const ip = prompt("What IP is robot on?", "192.168.1.127");
+	const port = prompt("What port number is the robot using?", "8080")
+	// ws = new WebSocket(`wss://connect.websocket.in/v3/1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self`);
+	console.log(`Connecting to ws://${ip}:${port}`)
+	ws = new WebSocket(`ws://${ip}:${port}`);
 	ws.onmessage = gotMessage;
 
 	ws.onclose = msg => {

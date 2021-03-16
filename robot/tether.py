@@ -4,27 +4,22 @@ import websockets
 import threading
 import pickle
 
+class Tether:
+    def __init__(self, handler, host="0.0.0.0", port=8080):
+        self.handler = handler
 
-sendData = None
-
-# start server, begin accepting connections
-async def realrespond(msg, path, resp, proc):
-    print(msg,path,resp)
-    proc(msg,resp)
-
-def accept_connections(proc):
-
-    # respond to messages and call provided processor on contents
-    async def respond(resp, path):
+        start_server = websockets.serve(self.respond, host, port)
+        asyncio.get_event_loop().run_until_complete(start_server)
+        asyncio.get_event_loop().run_forever()
+    
+    def respond(self, res, path):
         while True:
-            msg=await resp.recv()
-            await realrespond(msg, path, resp, proc)
+            msg = await res.recv()
+            await self.realrespond(msg, path, res)
+    
+    def realrespond(self, msg, path, res):
+        print(msg, path, res)
 
-    async def send(msg):
-        await res.send(msg)
-
-    sendData = send
-
-    start_server = websockets.serve(respond, "0.0.0.0", port=8080)
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
+    def send(self, msg):
+        pass #! TODO
+    
