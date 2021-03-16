@@ -12,7 +12,7 @@ let msgs = [];
 
 // Last received robot and obstacle locations
 let obstacles = []; // [{x, y}, {x, y}, ...]
-let robot = {x: ~~(200 / gridSize), y: ~~(0 / gridSize), a: 0}; // a is angle
+let robot = {x: 200, y: 50, a: 0}; // a is angle
 
 // UI components
 let panels = [];
@@ -20,7 +20,7 @@ let panels = [];
 function setup() {
 	// ws = {send: console.log};
 
-	const ip = prompt("What IP is robot on?", "192.168.1.127");
+	const ip = prompt("What IP is robot on?", "10.136.136.121");
 	const port = prompt("What port number is the robot using?", "8080")
 	console.log(`Connecting to ws://${ip}:${port}`)
 	ws = new WebSocket(`ws://${ip}:${port}`);
@@ -47,6 +47,7 @@ function setup() {
 		.addButton("Arcade Drive",() => handlePress("AD"))
 		.addButton("Autonomous", () => handlePress("AI"))
 		.addButton("STOP", () => handlePress("STOP"))
+		.addButton("CLEAROBS", clearObstacles)
 		.overrideStyle("STOP", "backgroundColor", "red")
 		.overrideStyle("STOP", "color", "white")
 		.setWidth(200)
@@ -75,7 +76,7 @@ function setup() {
 		.disableControl("Output");
 
 	panels = [ generalSettings, driveSettings, consoleSettings ];
-	createCanvas(360, 540);
+	createCanvas(2500, 2500);
 	angleMode(DEGREES);
 	rectMode(CENTER);
 	console.log(CENTER, "CENTER");
@@ -113,6 +114,10 @@ function handlePress(name) {
 	} else if (newState === 2) {
 		return send(name);
 	}
+}
+
+function clearObstacles() {
+	obstacles = [];
 }
 
 async function emptyQueue() {
@@ -192,12 +197,12 @@ function outputConsole(output) {
 
 // Normalize x -> take gridded value to pixel value
 function nX(x) {
-	return gridSize * x;
+	return Math.floor((width / 2 - Number(x)) / gridSize) * gridSize;
 }
 
 // Normalize y -> Canvas draws things from bottom to top so flip the y value
 function nY(y) {
-	return height - gridSize * y;
+	return height -  Math.floor((Number(y)) / gridSize) * gridSize;
 }
 
 // Draw map
@@ -208,12 +213,12 @@ function draw() {
 	strokeWeight(2);
 	stroke("rgba(255, 255, 255, 0.1)");
 
-	for (let i = 0; i < width; i+=gridSize) {
+	/**for (let i = 0; i < width; i+=gridSize) {
 		line(i, 0, i, height);
 	}
 	for (let j = 0; j < height; j+=gridSize) {
 		line(0, j, width, j);
-	}
+	} */
 
 	// Draw robot
 	fill("#AEAEAE");
@@ -232,10 +237,12 @@ function draw() {
 	strokeWeight(1);
 	stroke(50);
 	fill("#FFFFFF");
-	rectMode(CORNER);
-	for (let o of obstacles) {
+	rectMode(CORNER);	
+	for (const o of obstacles) {
+		// const o = obstacles[i];
 		rect(nX(o.x), nY(o.y), gridSize, gridSize);
 	}
+	
 	pop();
 }
 
