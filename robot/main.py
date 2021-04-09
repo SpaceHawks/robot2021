@@ -5,7 +5,7 @@ import asyncio
 import random
 # import linear_actuator
 import sys
-from vision import Detector
+from vision import Detector, Locator
 
 def receive_msg(msg, conn):
     # format is operator:arguments
@@ -17,11 +17,12 @@ def receive_msg(msg, conn):
 loop = asyncio.get_event_loop()
 t = Tether(handler=receive_msg, loop=loop)
 
-lidar = Detector()
+detector = Detector()
+# localization = Locator()
 
 async def obstacleTest():
     while True:
-        new_obs = lidar.detect(theta=0)
+        new_obs = detector.detect(theta=0)
         obs_strs = [f"{o.x},{o.y}" for o in new_obs]
         cmd = "O:" + ",".join(obs_strs)
         await t.send(cmd)

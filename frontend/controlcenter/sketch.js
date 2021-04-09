@@ -20,7 +20,7 @@ let panels = [];
 function setup() {
 	// ws = {send: console.log};
 
-	const ip = prompt("What IP is robot on?", "10.136.136.121");
+	const ip = prompt("What IP is robot on?", "192.168.2.49");
 	const port = prompt("What port number is the robot using?", "8080")
 	console.log(`Connecting to ws://${ip}:${port}`)
 	ws = new WebSocket(`ws://${ip}:${port}`);
@@ -241,7 +241,7 @@ function draw() {
 	rectMode(CORNER);	
 	for (const o of obstacles) {
 		// const o = obstacles[i];
-		rect(nX(o.x), nY(o.y / 2), gridSize, gridSize);
+		rect(nX(o.x), nY(o.y), gridSize, gridSize);
 	}
 	
 	pop();

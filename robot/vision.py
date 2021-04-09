@@ -9,8 +9,8 @@ from kalman import KalmanFilter
 
 
 class LIDAR:
-    def __init__(self):
-        self.lidar = HokuyoLX()
+    def __init__(self, ip="192.168.0.10", port=10940):
+        self.lidar = HokuyoLX(addr=(ip, port))
         self.kalman = KalmanFilter(adaptive=False, dt=0.025)
     
     def scan(self) -> list[tuple[float, float, float]]:
@@ -164,6 +164,9 @@ class Detector(LIDAR):
     ROUND_TO = 5 # Number of mm to round to
 
     obstacles = set()
+
+    def __init__(self):
+        super().__init__("192.168.0.10", 10940)
 
     def detect(self, theta):
         # Set of new obstacles
