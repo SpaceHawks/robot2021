@@ -166,7 +166,7 @@ class Detector(LIDAR):
     obstacles = set()
 
     def __init__(self):
-        super().__init__("192.168.0.10", 10940)
+        super().__init__("192.168.0.11", 10940) # Uses non-default IP address to avoid interfering with Locator
 
     def detect(self, theta):
         # Set of new obstacles
