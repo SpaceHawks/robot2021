@@ -27,12 +27,12 @@ async def lidar_test():
         print(f"Detected {len(new_obs)} obstacles")
         print(f"Location: ({locator.x}mm, {locator.y}mm, {locator.angle}rad)")
 
-
         obs_strs = [f"{o.x},{o.y}" for o in new_obs]
         obs_cmd = "O:" + ",".join(obs_strs)
         await t.send(obs_cmd)
         await t.send(f"R:{locator.x},{locator.y},{locator.angle}")
         await asyncio.sleep(0.25)
+
 
 
 loop.create_task(lidar_test())

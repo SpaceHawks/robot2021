@@ -1,5 +1,10 @@
-// How big are the squares?
-let gridSize = 5;
+// All in cm
+const gridSize = 5; // How much numbers are rounded by
+const gridCellResolution = 4; // How many px to draw a cell as
+const arenaWidth = 500;
+const arenaHeight = 1500;
+const robotWidth = 10;
+const robotHeight = 39;
 
 let ws, xws;
 let driveSettings, generalSettings, consoleSettings;
@@ -12,7 +17,7 @@ let msgs = [];
 
 // Last received robot and obstacle locations
 let obstacles = []; // [{x, y}, {x, y}, ...]
-let robot = {x: 200, y: 50, a: 0}; // a is angle
+let robot = {x: arenaWidth / 2, y: 1.5 * robotHeight, a: 0}; // a is angle
 
 // UI components
 let panels = [];
@@ -76,8 +81,8 @@ function setup() {
 		.disableControl("Output");
 
 	panels = [ generalSettings, driveSettings, consoleSettings ];
-	createCanvas(2500, 2500);
-	frameRate(1);
+	createCanvas(arenaWidth * gridCellResolution / gridSize, arenaHeight * gridCellResolution / gridSize);
+	frameRate(10);
 	angleMode(DEGREES);
 	rectMode(CENTER);
 	console.log(CENTER, "CENTER");
@@ -198,28 +203,17 @@ function outputConsole(output) {
 
 // Normalize x -> take gridded value to pixel value
 function nX(x) {
-	return Math.floor((width / 2 - Number(x)) / gridSize) * gridSize;
+	return width - Math.floor(Number(x) / gridSize) * gridCellResolution;
 }
 
 // Normalize y -> Canvas draws things from bottom to top so flip the y value
 function nY(y) {
-	return height -  Math.floor((Number(y)) / gridSize) * gridSize;
+	return height -  Math.floor(Number(y) / gridSize) * gridCellResolution;
 }
 
 // Draw map
 function draw() {
 	background(81);
-
-	// Draw grid
-	strokeWeight(2);
-	stroke("rgba(255, 255, 255, 0.1)");
-
-	/**for (let i = 0; i < width; i+=gridSize) {
-		line(i, 0, i, height);
-	}
-	for (let j = 0; j < height; j+=gridSize) {
-		line(0, j, width, j);
-	} */
 
 	// Draw robot
 	fill("#AEAEAE");
@@ -227,10 +221,10 @@ function draw() {
 	stroke(0);
 	push();
 	translate(nX(robot.x), nY(robot.y));
-	rotate(robot.a);
-	rect(0, 0, 50, 100); // Actual robot
+	rotate(degrees(robot.a));
+	rect(0, 0, robotWidth, robotHeight); // Actual robot
 	fill("#343434");
-	rect(0, -50, 25, 25); // Directional head / Obstacle Lidar
+	rect(0, -robotHeight / 2, robotWidth / 2, robotWidth / 2); // Directional head / Obstacle Lidar
 	pop();
 
 	// Draw obstacles
@@ -241,7 +235,7 @@ function draw() {
 	rectMode(CORNER);	
 	for (const o of obstacles) {
 		// const o = obstacles[i];
-		rect(nX(o.x), nY(o.y), gridSize, gridSize);
+		rect(nX(o.x), nY(o.y), gridCellResolution, gridCellResolution);
 	}
 	
 	pop();
@@ -261,7 +255,8 @@ function gotMessage(msg) {
 		let [x, y, a] = data;
 		robot = {x, y, a, time: Date.now()};
 	} else if (command === "O") {
-		outputConsole(`Obstacles: ${data}`);
+		// outputConsole(`Obstacles: ${data}`);
+		obstacles = [];
 		for (let i = 0; i < data.length; i+=2) {
 			try {
 				let [x, y] = data.slice(i, i + 2);

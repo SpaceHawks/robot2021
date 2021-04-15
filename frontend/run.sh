@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
 # serve frontend on localhost:3030
-http-server ./controlcenter -p3030 &
+http-server ./controlcenter -p3030 -c-1 &
 
 # run xbox server
 x-terminal-emulator -e "sudo node ./xbox_server/xbox_server.js" &
