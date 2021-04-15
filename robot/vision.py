@@ -9,10 +9,10 @@ from kalman import KalmanFilter
 
 
 class LIDAR:
-    def __init__(self, ip="192.168.0.10", port=10940):
+    def __init__(self, ip="192.168.1.10", port=10940):
         self.lidar = HokuyoLX(addr=(ip, port))
         self.kalman = KalmanFilter(adaptive=False, dt=0.025)
-    
+
     def scan(self) -> list[tuple[float, float, float]]:
         return self.lidar.get_filtered_intens()[1].tolist()
 
@@ -56,7 +56,7 @@ class Locator(LIDAR):
         # Iterate through the readings
         for point in data_points:
             d_ang, d_dist, intensity = point
-            print((np.degrees(d_ang), d_dist, intensity))
+            #print((np.degrees(d_ang), d_dist, intensity))
             is_bright = intensity >= self.REFLECTIVITY_THRESHOLD
 
             if points_left <= 0:
@@ -69,7 +69,8 @@ class Locator(LIDAR):
                 points_left -= 1
         
         if points_left > 0:
-            raise RuntimeError("Target not found")
+            print("Target not found")
+	    #raise RuntimeError("Target not found")
 
         y = self._calculateY(edges)
         x = self._calculateX(y, edges)
@@ -168,7 +169,7 @@ class Detector(LIDAR):
     def __init__(self):
         super().__init__("192.168.0.11", 10940) # Uses non-default IP address to avoid interfering with Locator
 
-    def detect(self, theta):
+    def detect(self, rob_x, rob_y, rob_a):
         # Set of new obstacles
         discovered = set()
         # Get LiDAR readings
@@ -182,13 +183,16 @@ class Detector(LIDAR):
             if dist > self.MAX_DIST:
                 continue
 
-            angle = alpha - theta
+            angle = alpha - rob_a
 
             x = dist * math.sin(angle)
             y = dist * math.cos(angle)
 
-            # TODO: Add to robot.x and robot.y
+            x += rob_x
+            y += rob_y
 
+            # TODO: Depends on angle
+            y += 38.375 # height of robot
             # Round x and y to nearest ROUND_TO
             x = math.floor(x / self.ROUND_TO) * self.ROUND_TO
             y = math.floor(y / self.ROUND_TO) * self.ROUND_TO
@@ -196,9 +200,9 @@ class Detector(LIDAR):
             obs_pt = Point(x,y)
             discovered.add(obs_pt)
             if obs_pt not in self.obstacles:
-                # discovered.add(obs_pt)
+                #discovered.add(obs_pt)
                 self.obstacles.add(obs_pt)
-            
+
         return discovered
 
     def print_obstacles(self):

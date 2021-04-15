@@ -22,13 +22,17 @@ locator = Locator()
 
 async def lidar_test():
     while True:
-        new_obs = detector.detect(theta=0)
         locator.locate()
-        print(f"Detected {new_obs} obstacles")
+        new_obs = detector.detect(rob_x=locator.x, rob_y=locator.y, rob_a=locator.angle)
+        print(f"Detected {len(new_obs)} obstacles")
         print(f"Location: ({locator.x}mm, {locator.y}mm, {locator.angle}rad)")
-        cmd = "O:" + ",".join(obs_strs)
-        await t.send(cmd)
-        await asyncio.sleep(5)
+
+
+        obs_strs = [f"{o.x},{o.y}" for o in new_obs]
+        obs_cmd = "O:" + ",".join(obs_strs)
+        await t.send(obs_cmd)
+        await t.send(f"R:{locator.x},{locator.y},{locator.angle}")
+        await asyncio.sleep(0.25)
 
 
 loop.create_task(lidar_test())
