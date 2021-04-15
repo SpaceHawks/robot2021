@@ -18,18 +18,20 @@ loop = asyncio.get_event_loop()
 t = Tether(handler=receive_msg, loop=loop)
 
 detector = Detector()
-# localization = Locator()
+locator = Locator()
 
-async def obstacleTest():
+async def lidar_test():
     while True:
         new_obs = detector.detect(theta=0)
-        obs_strs = [f"{o.x},{o.y}" for o in new_obs]
+        locator.locate()
+        print(f"Detected {new_obs} obstacles")
+        print(f"Location: ({locator.x}mm, {locator.y}mm, {locator.angle}rad)")
         cmd = "O:" + ",".join(obs_strs)
         await t.send(cmd)
         await asyncio.sleep(5)
 
 
-loop.create_task(obstacleTest())
+loop.create_task(lidar_test())
 
 # Start the event loop
 print(f"IP Address: {t.get_ip_address()}")
