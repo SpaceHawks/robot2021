@@ -187,7 +187,9 @@ class Detector(LIDAR):
             x = dist * math.sin(angle)
             y = dist * math.cos(angle)
 
-            # TODO: Add to robot.x and robot.y
+            #Add to robot location to obstacle location
+            x = self.x + x
+            y = self.y + y
 
             # Round x and y to nearest ROUND_TO
             x = math.floor(x / self.ROUND_TO) * self.ROUND_TO
