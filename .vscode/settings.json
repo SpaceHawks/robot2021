@@ -1,2 +1,4 @@
 {
+    "python.formatting.provider": "autopep8",
+    "python.pythonPath": "c:\\users\\camer\\appdata\\local\\programs\\python\\python39\\python.exe"
 }
