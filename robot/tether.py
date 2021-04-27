@@ -27,7 +27,7 @@ class Tether:
             await self.res.send(msg)
             return True
         except Exception as e:
-            print("Cannot send message as no client is connected")
+            # print("Cannot send message as no client is connected")
             return False
     
     def get_ip_address(self):

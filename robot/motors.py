@@ -2,12 +2,12 @@
 #from board import SCL, SDA
 #from adafruit_pca9685 import PCA9685
 from pysabertooth import Sabertooth
-from analogio import AnalogIn
+# from analogio import AnalogIn
 from enum import Enum
 import board
 import busio
 import time
-import rotaryio
+# import rotaryio
 
 # each Sabertooth controls 2 motors
 f_saber = Sabertooth('/dev/ttyS1', baudrate=9600, address=128, timeout=1000)

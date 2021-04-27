@@ -109,7 +109,6 @@ class Locator(LIDAR):
         # Rotate the point, extract x and y values
         res = np.matmul(ref_point, R)
         x, y = res
-        print(R.shape, res.shape)
 
         # Kalman filter
         self.kalman.addMeasurement([[x], [y], [theta]], [[0], [0]])

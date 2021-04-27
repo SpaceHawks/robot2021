@@ -1,19 +1,32 @@
 import xbox
-import time
-import motors
 
+class JoystickValue:
+    def __init__(self, name):
+        self.x = 0
+        self.y = 0
+        self.name = name
 
-joy = xbox.Joystick();
-avg_x = 0
-avg_y = 0
+    def update(self, x, y):
+        # exponential moving average to reduce brownout
+        self.x = (100 * x + self.x) / 2 if x != 0 or abs(self.x) > 0.1 else 0
+        self.y = (100 * y + self.y) / 2 if y != 0 or abs(self.y) > 0.1 else 0
+    
+    def __str__(self):
+        return f"JoystickValue<{self.name}>: ({self.x}, {self.y})"
 
-while True:
-    x,y = joy.leftStick()
-    x, y = x * 100, y * 100
-    # exponential moving average to reduce brownout
-    avg_x = (x + avg_x) / 2
-    avg_y = (y + avg_y) / 2
+    def __repr__(self):
+        return self.__str__()
 
-    print({'x':x, 'y':y});
-    motors.DriveTrain.arcade_drive(avg_y, avg_x)
-    time.sleep(1 / 8)
+class XboxController:
+    def __init__(self):
+        self.motor_xy = JoystickValue("Motors")
+        self.td_xy = JoystickValue("TrenchDigger")
+        self.joy = xbox.Joystick()
+    
+    def read_controller(self):
+        # Left Joystick: Arcade Drive motor control
+        mx, my = self.joy.leftStick()
+        self.motor_xy.update(mx, my)
+
+        tx, ty = self.joy.rightStick()
+        self.td_xy.update(tx, ty)
