@@ -33,18 +33,7 @@ class Point():
         return self.x == other.x and self.y == other.y
 
 # Localization
-def rotate(origin, point, angle):
-    """
-    Rotate a point counterclockwise by a given angle around a given origin.
 
-    The angle should be given in radians.
-    """
-    ox, oy = origin
-    px, py = point
-
-    qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-    qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-    return qx, qy
 
 class Locator(LIDAR):
     OUTLIER_CONSTANT = 1.5  # Threshold for considering a data point an outlier
@@ -154,14 +143,20 @@ class Detector(LIDAR):
             if dist > self.MAX_DIST:
                 continue
 
+            # angle = alpha - rob_a
             x = dist * math.sin(alpha)
-            y = dist * math.cos(alpha) + 38.375
+            y = dist * math.cos(alpha)
+
+            c, s = np.cos(rob_a), np.sin(rob_a)
+            R = np.array(((c, -s), (s, c)))  # Rotation matrix
+
+            x, y = np.matmul(R, (x, y))
 
             x += rob_x
             y += rob_y
 
-            x, y = rotate((rob_x, rob_y), (x, y), -rob_a)
-
+            # TODO: Depends on angle
+            y += 38.375  # height of robot
             # Round x and y to nearest ROUND_TO
             x = math.floor(x / self.ROUND_TO) * self.ROUND_TO
             y = math.floor(y / self.ROUND_TO) * self.ROUND_TO
