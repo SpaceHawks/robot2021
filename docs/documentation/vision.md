@@ -55,3 +55,15 @@ Initiates connection to the sensor and sets default coordinate to (0.0, 0.0) @ 0
 #### Constants
 
 #### Functions
+
+
+#### Connecting two LiDARs
+In order to connect both LiDARs, the RPi needs the two following commands:
+
+```bash
+sudo ip addr change dev eth0 192.168.0.12/16
+```
+
+```bash
+sudo ip addr change dev eth1 192.168.1.12/24
+```
